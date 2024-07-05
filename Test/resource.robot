@@ -25,8 +25,7 @@ ${address}       "57 Ashdale Road Walton Liverpool L9 2AA"
 *** Keywords ***
 OpenBroser
     [Arguments]    ${url}    ${browser_mode}
-    # Open Browser        ${url}    ${browser_name}
-    Run Keyword If    '${browser_mode}' == 'headlessfirefox'    Open Headless Browser    ${url}        ELSE    Open Normal Browser    ${url}
+    Open Browser        ${url}   ${browser_mode}
     Maximize browser window
 
 Close Browser Session
@@ -39,10 +38,10 @@ WaitTimeOut
     Wait Until Element Is Visible    ${xpath}
     Wait Until Element Is Enabled    ${xpath}
 
-Open Headless Browser
-    [Arguments]    ${url} 
-    Open Browser    ${url}    browser=${headless_browser_firefox}
+# Open Headless Browser
+#     [Arguments]    ${url} 
+#     Open Browser    ${url}    browser=${headless_browser_firefox}
 
-Open Normal Browser
-    [Arguments]    ${url}
-    Open Browser    ${url}    browser=${browser_name}
+# Open Normal Browser
+#     [Arguments]    ${url}
+#     Open Browser    ${url}    browser=${browser_name}

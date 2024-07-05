@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Test Setup        OpenBroser    ${mcf_salesforce_login_url}    browser=${headless_browser_firefox}
+Test Setup        OpenBroser    ${mcf_salesforce_login_url}    ${headless_browser_firefox}
 Test Teardown    Close Browser Session
 Resource        resource.robot
 
@@ -70,7 +70,7 @@ Filling netbanking details
     WaitTimeOut    (//button[contains(text(),'Select account')])[1]
     Click Button    (//button[contains(text(),'Select account')])[1]
     Click Button    //button[@id="approveButton"]
-    Sleep    10s
+    Sleep    15s
     Element Text Should Be    //h5    Payment completed
     # Click Button    //button[@aria-label="Aggregator"]
 
