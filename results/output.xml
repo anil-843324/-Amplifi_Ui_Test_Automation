@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<robot generator="Robot 7.0.1 (Python 3.12.4 on win32)" generated="2024-07-05T10:04:38.963855" rpa="false" schemaversion="5">
+<suite id="s1" name="MCF UI AUTOMATION" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION">
+<suite id="s1-s1" name="Test" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION\Test">
+<suite id="s1-s1-s1" name="Loans" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION\Test\Loans.robot">
+<test id="s1-s1-s1-t1" name="Validate that Successful easy payment journey" line="9">
+<kw name="OpenBroser" owner="resource" type="SETUP">
+<kw name="Open Browser" owner="SeleniumLibrary">
+<msg time="2024-07-05T10:04:39.200707" level="INFO">Opening browser 'headlessfirefox' to base url 'https://uat.customer.mycommunityfinance.co.uk/s/login/'.</msg>
+<msg time="2024-07-05T10:04:44.978627" level="INFO">Cannot capture screenshot because no browser is open.</msg>
+<arg>${url}</arg>
+<arg>${browser}</arg>
+<doc>Opens a new browser instance to the optional ``url``.</doc>
+<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.777920">Execution terminated by signal</status>
+</kw>
+<kw name="Maximize Browser Window" owner="SeleniumLibrary">
+<doc>Maximizes current browser window.</doc>
+<status status="NOT RUN" start="2024-07-05T10:04:44.978627" elapsed="0.000000"/>
+</kw>
+<arg>${salesforce_login_url}</arg>
+<arg>browser=${headless_browser_firefox}</arg>
+<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.777920">Execution terminated by signal</status>
+</kw>
+<kw name="Close Browser Session" owner="resource" type="TEARDOWN">
+<kw name="Close Browser" owner="SeleniumLibrary">
+<doc>Closes the current browser.</doc>
+<status status="PASS" start="2024-07-05T10:04:44.980871" elapsed="0.000000"/>
+</kw>
+<status status="PASS" start="2024-07-05T10:04:44.980374" elapsed="0.000497"/>
+</kw>
+<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.780164">Setup failed:
+Execution terminated by signal</status>
+</test>
+<status status="FAIL" start="2024-07-05T10:04:38.983502" elapsed="5.999733"/>
+</suite>
+<status status="FAIL" start="2024-07-05T10:04:38.983502" elapsed="6.002241"/>
+</suite>
+<status status="FAIL" start="2024-07-05T10:04:38.971501" elapsed="6.015127"/>
+</suite>
+<statistics>
+<total>
+<stat pass="0" fail="1" skip="0">All Tests</stat>
+</total>
+<tag>
+</tag>
+<suite>
+<stat pass="0" fail="1" skip="0" id="s1" name="MCF UI AUTOMATION">MCF UI AUTOMATION</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1" name="Test">MCF UI AUTOMATION.Test</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1-s1" name="Loans">MCF UI AUTOMATION.Test.Loans</stat>
+</suite>
+</statistics>
+<errors>
+</errors>
+</robot>

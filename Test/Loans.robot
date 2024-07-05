@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Test Setup        OpenBroser
+Test Setup        OpenBroser    ${salesforce_login_url}    browser=${headless_browser_firefox}
 Test Teardown    Close Browser Session
 Resource        resource.robot
 

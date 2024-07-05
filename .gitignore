@@ -2,3 +2,5 @@
 /results/*.log
 /results/*.png
 Demo.robot
+/results/*.html
+/results/*.xml
