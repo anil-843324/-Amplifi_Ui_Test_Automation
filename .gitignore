@@ -4,3 +4,5 @@
 Demo.robot
 /results/*.html
 /results/*.xml
+__pycache__
+

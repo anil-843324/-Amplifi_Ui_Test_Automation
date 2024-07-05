@@ -1,28 +1,25 @@
 *** Settings ***
 Library    SeleniumLibrary
-Test Setup        OpenBroser    ${reevo_salesforce_login_url}    browser=${headless_browser_firefox}
+Test Setup        OpenBroser    https://uat.reevomoney.com/    browser=${headless_browser_firefox}
 Test Teardown    Close Browser Session
 Resource        resource.robot
+Variables    Xpth.py
 
 
 *** Test Cases ***
-Validate that Successful easy payment journey
-    Fill the login Form    username=${reevo_user_email_id}    password=${reevo_valid_password} 
-    Navigate to easy payment page
-    Make a payment
+# Validate that Successful easy payment journey
+#     Fill the login Form    username=${reevo_user_email_id}    password=${reevo_valid_password} 
+#     Navigate to easy payment page
+#     Make a payment
 # Validate that Unsuccessful easy payment journey
 #     Fill the login Form    username=${user_email_id}    password=${valid_password} 
 #     Navigate to easy payment page
 #     Make a payment
+Validate that loan journey with valid data
+    Fill the loan applicaiton form
 
 *** Keywords ***
-WaitTimeOut
-    [Arguments]    ${xpath}
-    Set Selenium Implicit Wait    15 sec
-    Set Selenium Timeout    15 sec
-    Wait Until Page Contains Element    ${xpath}
-    Wait Until Element Is Visible    ${xpath}
-    Wait Until Element Is Enabled    ${xpath}
+
 Fill the login Form
     [Arguments]    ${username}    ${password}
     WaitTimeOut    //button
@@ -55,3 +52,41 @@ Make a payment
     Sleep    10s
 
 
+Fill the loan applicaiton form
+    WaitTimeOut    xpath=${getMypersonalisedQuote_XPATH}
+    Execute Javascript    document.querySelectorAll("button")[2].scrollIntoView(true)
+    Click Button    locator=${getMypersonalisedQuote_XPATH}
+
+    WaitTimeOut    xpath=${useLoanFor_XPATH}
+    Execute Javascript    document.querySelectorAll("label")[6].scrollIntoView(true)
+    Click Element    locator=${useLoanFor_XPATH}
+
+    Scroll Element Into View    //label[@for="loanPurposeOther"]
+    Input Text    locator=${pleaseSpecify_XPATH}    text=Education
+
+    Execute Javascript    document.querySelectorAll("label.md-regular")[6].scrollIntoView(true)
+    Click Element    locator=${yourTitle_XPATH}
+
+    Execute Javascript    document.querySelectorAll("label")[6].scrollIntoView(true)
+    Input Text    locator=${firstName_XPATH}    text=Anil
+    Input Text    locator=${lastName_XPATH}    text=Kumar
+
+    Execute Javascript    document.querySelectorAll("input")[12].scrollIntoView(true)
+    Input Text    locator=${DD_XPATH}    text=12
+    Input Text    locator=${MM_XPATH}    text=12
+    Input Text    locator=${YYYY_XPATH}    text=2000
+
+    Input Text    locator=${email_XPATH}    text=anil@yopmail.com
+    Input Text    locator=${mobileNumber_XPATH}    text=7255842110
+
+    Input Text    locator=${postCode_XPATH}    text=NW4 3AB
+    Click Button    locator=${findMyAddress_XPATH}
+    Select From List By Index    ${selectAddress_XPATH}    10
+    # Select From List By Value    ${selectAddress_XPATH}    ${address}
+    
+    
+
+
+
+    
+      
