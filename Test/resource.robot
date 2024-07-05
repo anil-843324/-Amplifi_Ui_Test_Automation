@@ -20,18 +20,17 @@ ${reevo_salesforce_login_url}        https://uat.customer.reevomoney.com/s/login
 ${browser_name}        Firefox
 ${headless_browser_firefox}    headlessfirefox
 ${headless_browser_chrome}    headlesschrome
+
 ${address}       "57 Ashdale Road Walton Liverpool L9 2AA"
 *** Keywords ***
 OpenBroser
-    [Arguments]    ${url}    ${browser}
-    Open Browser        ${url}    ${browser}
+    [Arguments]    ${url}    ${browser_mode}
+    # Open Browser        ${url}    ${browser_name}
+    Run Keyword If    '${browser_mode}' == 'headlessfirefox'    Open Headless Browser    ${url}        ELSE    Open Normal Browser    ${url}
     Maximize browser window
 
 Close Browser Session
     Close Browser
-# wait until Element is visible
-#     # Wait Until Element Is Visible   
-#     Close Browser 
 WaitTimeOut
     [Arguments]    ${xpath}
     Set Selenium Implicit Wait    15 sec
@@ -39,3 +38,11 @@ WaitTimeOut
     Wait Until Page Contains Element    ${xpath}
     Wait Until Element Is Visible    ${xpath}
     Wait Until Element Is Enabled    ${xpath}
+
+Open Headless Browser
+    [Arguments]    ${url} 
+    Open Browser    ${url}    browser=${headless_browser_firefox}
+
+Open Normal Browser
+    [Arguments]    ${url}
+    Open Browser    ${url}    browser=${browser_name}
