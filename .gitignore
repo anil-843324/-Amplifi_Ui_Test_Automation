@@ -1,0 +1,4 @@
+.idea
+/results/*.log
+/results/*.png
+Demo.robot
