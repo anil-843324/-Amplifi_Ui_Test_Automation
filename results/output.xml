@@ -1,41 +1,298 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<robot generator="Robot 7.0.1 (Python 3.12.4 on win32)" generated="2024-07-05T10:04:38.963855" rpa="false" schemaversion="5">
+<robot generator="Robot 7.0.1 (Python 3.12.4 on win32)" generated="2024-07-05T11:22:52.483176" rpa="false" schemaversion="5">
 <suite id="s1" name="MCF UI AUTOMATION" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION">
 <suite id="s1-s1" name="Test" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION\Test">
-<suite id="s1-s1-s1" name="Loans" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION\Test\Loans.robot">
+<suite id="s1-s1-s1" name="Reevoloan" source="C:\Users\AnilKumar\OneDrive - Gojoko\Desktop\ROBOT FRAMEWORK\MCF_UI_AUTOMATION\Test\reevoloan.robot">
 <test id="s1-s1-s1-t1" name="Validate that Successful easy payment journey" line="9">
 <kw name="OpenBroser" owner="resource" type="SETUP">
 <kw name="Open Browser" owner="SeleniumLibrary">
-<msg time="2024-07-05T10:04:39.200707" level="INFO">Opening browser 'headlessfirefox' to base url 'https://uat.customer.mycommunityfinance.co.uk/s/login/'.</msg>
-<msg time="2024-07-05T10:04:44.978627" level="INFO">Cannot capture screenshot because no browser is open.</msg>
+<msg time="2024-07-05T11:22:52.860600" level="INFO">Opening browser 'Firefox' to base url 'https://uat.customer.reevomoney.com/s/login/'.</msg>
 <arg>${url}</arg>
 <arg>${browser}</arg>
 <doc>Opens a new browser instance to the optional ``url``.</doc>
-<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.777920">Execution terminated by signal</status>
+<status status="PASS" start="2024-07-05T11:22:52.859523" elapsed="11.842292"/>
 </kw>
 <kw name="Maximize Browser Window" owner="SeleniumLibrary">
 <doc>Maximizes current browser window.</doc>
-<status status="NOT RUN" start="2024-07-05T10:04:44.978627" elapsed="0.000000"/>
+<status status="PASS" start="2024-07-05T11:23:04.702387" elapsed="0.006031"/>
 </kw>
-<arg>${salesforce_login_url}</arg>
-<arg>browser=${headless_browser_firefox}</arg>
-<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.777920">Execution terminated by signal</status>
+<arg>${reevo_salesforce_login_url}</arg>
+<arg>browser=${browser_name}</arg>
+<status status="PASS" start="2024-07-05T11:22:52.858449" elapsed="11.850469"/>
+</kw>
+<kw name="Fill the login Form">
+<kw name="WaitTimeOut">
+<kw name="Set Selenium Implicit Wait" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the implicit wait value used by Selenium.</doc>
+<status status="PASS" start="2024-07-05T11:23:04.715924" elapsed="0.006309"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2024-07-05T11:23:04.723217" elapsed="0.006312"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2024-07-05T11:23:04.730029" elapsed="0.261347"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-07-05T11:23:04.992000" elapsed="0.050570"/>
+</kw>
+<kw name="Wait Until Element Is Enabled" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is enabled.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.042570" elapsed="0.032533"/>
+</kw>
+<arg>//button</arg>
+<status status="PASS" start="2024-07-05T11:23:04.714733" elapsed="0.360869"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:05.077605" level="INFO">Clicking button '//button'.</msg>
+<arg>//button</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.076103" elapsed="0.373769"/>
+</kw>
+<kw name="WaitTimeOut">
+<kw name="Set Selenium Implicit Wait" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the implicit wait value used by Selenium.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.451871" elapsed="0.004793"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.456664" elapsed="0.005015"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.461679" elapsed="0.006096"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.468321" elapsed="0.014320"/>
+</kw>
+<kw name="Wait Until Element Is Enabled" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is enabled.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.482641" elapsed="0.025232"/>
+</kw>
+<arg>//input[@placeholder="Enter your email..."]</arg>
+<status status="PASS" start="2024-07-05T11:23:05.450872" elapsed="0.057500"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:05.510161" level="INFO">Typing text 'priya.gojoko2811+41@gmail.com' into text field '//input[@placeholder="Enter your email..."]'.</msg>
+<arg>//input[@placeholder="Enter your email..."]</arg>
+<arg>${username}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.508989" elapsed="0.104979"/>
+</kw>
+<kw name="Input Password" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:05.615145" level="INFO">Typing password into text field '//input[@data-name="passwordInput"]'.</msg>
+<msg time="2024-07-05T11:23:05.646602" level="INFO">Temporally setting log level to: NONE</msg>
+<arg>//input[@data-name="passwordInput"]</arg>
+<arg>${password}</arg>
+<doc>Types the given password into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.614470" elapsed="0.056318"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:05.671867" level="INFO">Clicking button '//button[contains(@class,"slds-button")]'.</msg>
+<arg>//button[contains(@class,"slds-button")]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.670788" elapsed="0.259999"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2024-07-05T11:23:15.932960" level="INFO">Slept 10 seconds.</msg>
+<arg>10s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2024-07-05T11:23:05.931327" elapsed="10.001633"/>
+</kw>
+<arg>username=${reevo_user_email_id}</arg>
+<arg>password=${reevo_valid_password}</arg>
+<status status="PASS" start="2024-07-05T11:23:04.712516" elapsed="11.220444"/>
+</kw>
+<kw name="Navigate to easy payment page">
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:15.934884" level="INFO">Clicking button '//button[@title="Go to loan overview"]'.</msg>
+<arg>//button[@title="Go to loan overview"]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:15.934884" elapsed="2.340572"/>
+</kw>
+<kw name="WaitTimeOut">
+<kw name="Set Selenium Implicit Wait" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the implicit wait value used by Selenium.</doc>
+<status status="PASS" start="2024-07-05T11:23:18.276454" elapsed="0.005769"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2024-07-05T11:23:18.282223" elapsed="0.004154"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2024-07-05T11:23:18.286377" elapsed="11.236712"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.523291" elapsed="0.023488"/>
+</kw>
+<kw name="Wait Until Element Is Enabled" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is enabled.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.547406" elapsed="0.026653"/>
+</kw>
+<arg>//div[contains(@class,'mt-16')]//a</arg>
+<status status="PASS" start="2024-07-05T11:23:18.275456" elapsed="11.298926"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:29.575523" level="INFO">Clicking element '//div[contains(@class,'mt-16')]//a'.</msg>
+<arg>//div[contains(@class,'mt-16')]//a</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.574883" elapsed="0.259981"/>
+</kw>
+<status status="PASS" start="2024-07-05T11:23:15.933965" elapsed="13.900899"/>
+</kw>
+<kw name="Make a payment">
+<kw name="WaitTimeOut">
+<kw name="Set Selenium Implicit Wait" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the implicit wait value used by Selenium.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.837845" elapsed="0.004094"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.841939" elapsed="0.005775"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2024-07-05T11:23:29.848213" elapsed="6.205680"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-07-05T11:23:36.053893" elapsed="0.014725"/>
+</kw>
+<kw name="Wait Until Element Is Enabled" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is enabled.</doc>
+<status status="PASS" start="2024-07-05T11:23:36.069712" elapsed="0.016366"/>
+</kw>
+<arg>(//div[contains(@class,'paymentHeading')])[1]</arg>
+<status status="PASS" start="2024-07-05T11:23:29.836844" elapsed="6.249234"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2024-07-05T11:23:43.087472" level="INFO">Slept 7 seconds.</msg>
+<arg>7s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2024-07-05T11:23:36.086078" elapsed="7.001394"/>
+</kw>
+<kw name="Click Element" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:43.088587" level="INFO">Clicking element '(//div[contains(@class,'paymentHeading')])[1]'.</msg>
+<arg>(//div[contains(@class,'paymentHeading')])[1]</arg>
+<doc>Click the element identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:43.087472" elapsed="0.228168"/>
+</kw>
+<kw name="Input Text" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:43.316632" level="INFO">Typing text '100' into text field '//input[contains(@class,'input-border-with-mask')]'.</msg>
+<arg>//input[contains(@class,'input-border-with-mask')]</arg>
+<arg>${arreras_amount}</arg>
+<doc>Types the given ``text`` into the text field identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:43.316632" elapsed="0.586910"/>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:43.904706" level="INFO">Clicking button '//button[contains(@class,'btnLabel btn verify-btn')]'.</msg>
+<arg>//button[contains(@class,'btnLabel btn verify-btn')]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="PASS" start="2024-07-05T11:23:43.903542" elapsed="0.238165"/>
+</kw>
+<kw name="WaitTimeOut">
+<kw name="Set Selenium Implicit Wait" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the implicit wait value used by Selenium.</doc>
+<status status="PASS" start="2024-07-05T11:23:44.143119" elapsed="0.002363"/>
+</kw>
+<kw name="Set Selenium Timeout" owner="SeleniumLibrary">
+<arg>15 sec</arg>
+<doc>Sets the timeout that is used by various keywords.</doc>
+<status status="PASS" start="2024-07-05T11:23:44.145482" elapsed="0.001998"/>
+</kw>
+<kw name="Wait Until Page Contains Element" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` appears on the current page.</doc>
+<status status="PASS" start="2024-07-05T11:23:44.148583" elapsed="6.911746"/>
+</kw>
+<kw name="Wait Until Element Is Visible" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is visible.</doc>
+<status status="PASS" start="2024-07-05T11:23:51.060329" elapsed="0.011680"/>
+</kw>
+<kw name="Wait Until Element Is Enabled" owner="SeleniumLibrary">
+<arg>${xpath}</arg>
+<doc>Waits until the element ``locator`` is enabled.</doc>
+<status status="PASS" start="2024-07-05T11:23:51.072974" elapsed="0.012933"/>
+</kw>
+<arg>//button[contains(text(),'Confirm payment detail')]</arg>
+<status status="PASS" start="2024-07-05T11:23:44.142717" elapsed="6.943190"/>
+</kw>
+<kw name="Execute Javascript" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:51.087934" level="INFO">Executing JavaScript:
+window.scrollTo(0, document.body.scrollHeight)
+Without any arguments.</msg>
+<arg>window.scrollTo(0, document.body.scrollHeight)</arg>
+<doc>Executes the given JavaScript code with possible arguments.</doc>
+<status status="PASS" start="2024-07-05T11:23:51.085907" elapsed="0.009901"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<msg time="2024-07-05T11:23:53.095916" level="INFO">Slept 2 seconds.</msg>
+<arg>2s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="PASS" start="2024-07-05T11:23:51.095911" elapsed="2.000258"/>
+</kw>
+<kw name="Element Text Should Be" owner="SeleniumLibrary">
+<msg time="2024-07-05T11:23:53.097224" level="INFO">Verifying element '//button[contains(text(),'Confirm payment detail')]' contains exact text 'confirm payment details'.</msg>
+<msg time="2024-07-05T11:23:53.159322" level="INFO" html="true">&lt;/td&gt;&lt;/tr&gt;&lt;tr&gt;&lt;td colspan="3"&gt;&lt;a href="selenium-screenshot-35.png"&gt;&lt;img src="selenium-screenshot-35.png" width="800px"&gt;&lt;/a&gt;</msg>
+<msg time="2024-07-05T11:23:53.159822" level="FAIL">The text of element '//button[contains(text(),'Confirm payment detail')]' should have been 'confirm payment details' but it was 'confirm payment detail'.</msg>
+<arg>//button[contains(text(),'Confirm payment detail')]</arg>
+<arg>confirm payment details</arg>
+<doc>Verifies that element ``locator`` contains exact the text ``expected``.</doc>
+<status status="FAIL" start="2024-07-05T11:23:53.096756" elapsed="0.066503">The text of element '//button[contains(text(),'Confirm payment detail')]' should have been 'confirm payment details' but it was 'confirm payment detail'.</status>
+</kw>
+<kw name="Click Button" owner="SeleniumLibrary">
+<arg>//button[contains(text(),'Confirm payment detail')]</arg>
+<doc>Clicks the button identified by ``locator``.</doc>
+<status status="NOT RUN" start="2024-07-05T11:23:53.163862" elapsed="0.000000"/>
+</kw>
+<kw name="Sleep" owner="BuiltIn">
+<arg>10s</arg>
+<doc>Pauses the test executed for the given time.</doc>
+<status status="NOT RUN" start="2024-07-05T11:23:53.164364" elapsed="0.000000"/>
+</kw>
+<status status="FAIL" start="2024-07-05T11:23:29.835843" elapsed="23.328521">The text of element '//button[contains(text(),'Confirm payment detail')]' should have been 'confirm payment details' but it was 'confirm payment detail'.</status>
 </kw>
 <kw name="Close Browser Session" owner="resource" type="TEARDOWN">
 <kw name="Close Browser" owner="SeleniumLibrary">
 <doc>Closes the current browser.</doc>
-<status status="PASS" start="2024-07-05T10:04:44.980871" elapsed="0.000000"/>
+<status status="PASS" start="2024-07-05T11:23:53.166379" elapsed="3.613953"/>
 </kw>
-<status status="PASS" start="2024-07-05T10:04:44.980374" elapsed="0.000497"/>
+<status status="PASS" start="2024-07-05T11:23:53.165379" elapsed="3.614953"/>
 </kw>
-<status status="FAIL" start="2024-07-05T10:04:39.200707" elapsed="5.780164">Setup failed:
-Execution terminated by signal</status>
+<status status="FAIL" start="2024-07-05T11:22:52.856201" elapsed="63.925191">The text of element '//button[contains(text(),'Confirm payment detail')]' should have been 'confirm payment details' but it was 'confirm payment detail'.</status>
 </test>
-<status status="FAIL" start="2024-07-05T10:04:38.983502" elapsed="5.999733"/>
+<status status="FAIL" start="2024-07-05T11:22:52.523875" elapsed="64.259519"/>
 </suite>
-<status status="FAIL" start="2024-07-05T10:04:38.983502" elapsed="6.002241"/>
+<status status="FAIL" start="2024-07-05T11:22:52.518440" elapsed="64.265954"/>
 </suite>
-<status status="FAIL" start="2024-07-05T10:04:38.971501" elapsed="6.015127"/>
+<status status="FAIL" start="2024-07-05T11:22:52.491603" elapsed="64.294791"/>
 </suite>
 <statistics>
 <total>
@@ -46,7 +303,7 @@ Execution terminated by signal</status>
 <suite>
 <stat pass="0" fail="1" skip="0" id="s1" name="MCF UI AUTOMATION">MCF UI AUTOMATION</stat>
 <stat pass="0" fail="1" skip="0" id="s1-s1" name="Test">MCF UI AUTOMATION.Test</stat>
-<stat pass="0" fail="1" skip="0" id="s1-s1-s1" name="Loans">MCF UI AUTOMATION.Test.Loans</stat>
+<stat pass="0" fail="1" skip="0" id="s1-s1-s1" name="Reevoloan">MCF UI AUTOMATION.Test.Reevoloan</stat>
 </suite>
 </statistics>
 <errors>

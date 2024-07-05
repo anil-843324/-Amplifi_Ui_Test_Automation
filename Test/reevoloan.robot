@@ -1,13 +1,13 @@
 *** Settings ***
 Library    SeleniumLibrary
-Test Setup        OpenBroser    ${mcf_salesforce_login_url}    browser=${headless_browser_firefox}
+Test Setup        OpenBroser    ${reevo_salesforce_login_url}    browser=${headless_browser_firefox}
 Test Teardown    Close Browser Session
 Resource        resource.robot
 
 
 *** Test Cases ***
 Validate that Successful easy payment journey
-    Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
+    Fill the login Form    username=${reevo_user_email_id}    password=${reevo_valid_password} 
     Navigate to easy payment page
     Make a payment
 # Validate that Unsuccessful easy payment journey
@@ -25,10 +25,12 @@ WaitTimeOut
     Wait Until Element Is Enabled    ${xpath}
 Fill the login Form
     [Arguments]    ${username}    ${password}
-    WaitTimeOut    //input[@inputmode="email"]
-    Input Text    //input[@inputmode="email"]    ${username}
-    Input Password   //input[@placeholder="Enter your password"]    ${password}
-    Click Button    //button[contains(@class,"login_btn")]
+    WaitTimeOut    //button
+    Click Button    //button
+    WaitTimeOut    //input[@placeholder="Enter your email..."]
+    Input Text    //input[@placeholder="Enter your email..."]    ${username}
+    Input Password   //input[@data-name="passwordInput"]    ${password}
+    Click Button    //button[contains(@class,"slds-button")]
     Sleep    10s
     # Close Browser
     
@@ -42,12 +44,12 @@ Make a payment
     Click Element    (//div[contains(@class,'paymentHeading')])[1]
     Input Text    //input[contains(@class,'input-border-with-mask')]    ${arreras_amount}
     Click Button    //button[contains(@class,'btnLabel btn verify-btn')]
-    WaitTimeOut    //button[contains(text(),'Confirm payment details')]
+    WaitTimeOut    //button[contains(text(),'Confirm payment detail')]
     # Execute Javascript    document.querySelectorAll("button.btn")[0].scrollIntoView(true)
     Execute JavaScript    window.scrollTo(0, document.body.scrollHeight)
     Sleep    2s
-    Element Text Should Be    //button[contains(text(),'Confirm payment details')]    confirm payment details
-    Click Button    //button[contains(text(),'Confirm payment details')]
+    Element Text Should Be    //button[contains(text(),'Confirm payment detail')]    confirm payment detail
+    Click Button    //button[contains(text(),'Confirm payment detail')]
     # Should Be Equal As Strings    "anil"    "Anil"
     # Element Text Should Be    //button[contains(text(),'Confirm payment details')]    Confirm payment details
     Sleep    10s

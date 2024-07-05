@@ -1807,3 +1807,658 @@ const lightModeIcon = `
 const darkModeIcon = `
 <svg class="dark-mode-icon" xmlns="http://www.w3.org/2000/svg" enable-background="new 0 0 24 24"
     viewBox="0 0 24 24" fill="var(--text-color)">
+    <rect fill="none" height="24" width="24" />
+    <path
+        d="M11.01,3.05C6.51,3.54,3,7.36,3,12c0,4.97,4.03,9,9,9c4.63,0,8.45-3.5,8.95-8c0.09-0.79-0.78-1.42-1.54-0.95 c-0.84,0.54-1.84,0.85-2.91,0.85c-2.98,0-5.4-2.42-5.4-5.4c0-1.06,0.31-2.06,0.84-2.89C12.39,3.94,11.9,2.98,11.01,3.05z" />
+</svg>`
+function removeJavaScriptDisabledWarning() {
+    // Not using jQuery here for maximum speed
+    document.getElementById('javascript-disabled').style.display = 'none';
+}
+function addJavaScriptDisabledWarning(error) {
+    if (window.console)
+        console.error('Opening failed: ' + error.name + ': ' + error.message);
+    document.getElementById('javascript-disabled').style.display = 'block';
+}
+function initLayout(suiteName, type) {
+    parseTemplates();
+    setTitle(suiteName, type);
+    addHeader();
+    addReportOrLogLink(type);
+}
+function parseTemplates() {
+    $('script[type="text/x-jquery-tmpl"]').map(function (idx, elem) {
+        $.template(elem.id, elem.text);
+    });
+}
+function testOrTask(text) {
+    return text.replace(/{(.*)}/, function (match, group, offset, string) {
+        if (!window.settings.rpa)
+            return group;
+        return {'TEST': 'TASK', 'Test': 'Task', 'test': 'task'}[group];
+    });
+}
+function setTitle(suiteName, type) {
+    var givenTitle = window.settings.title;
+    var title = givenTitle ? givenTitle : suiteName + " " + type;
+    document.title = util.unescape(title);
+}
+function addHeader() {
+    var generated = util.timestamp(window.output.generated);
+    $.tmpl('<h1>${title}</h1>' +
+           '<button id=theme-toggle>' +
+             lightModeIcon +
+             darkModeIcon +
+           '</button>' +
+           '<div id="generated">' +
+             '<span>Generated<br>${generated}</span><br>' +
+             '<span id="generated-ago">${ago} ago</span>' +
+           '</div>' +
+           '<div id="top-right-header">' +
+             '<div id="report-or-log-link"><a href="#"></a></div>' +
+           '</div>', {
+        generated: util.createGeneratedString(generated),
+        ago: util.createGeneratedAgoString(generated),
+        title: document.title
+    }).appendTo($('#header'));
+    document.getElementById('theme-toggle')?.addEventListener('click', theme.onClick);
+}
+function addReportOrLogLink(myType) {
+    var url;
+    var text;
+    var container = $('#report-or-log-link');
+    if (myType == 'Report') {
+        url = window.settings.logURL;
+        text = 'LOG';
+    } else {
+        url = window.settings.reportURL;
+        text = 'REPORT';
+    }
+    if (url) {
+        container.find('a').attr('href', url);
+        container.find('a').text(text);
+    } else {
+        container.remove();
+    }
+}
+function addStatistics() {
+    var statHeaders =
+        '<th class="stats-col-stat">Total</th>' +
+        '<th class="stats-col-stat">Pass</th>' +
+        '<th class="stats-col-stat">Fail</th>' +
+        '<th class="stats-col-stat">Skip</th>' +
+        '<th class="stats-col-elapsed">Elapsed</th>' +
+        '<th class="stats-col-graph">Pass / Fail / Skip</th>';
+    var statTable =
+        '<h2>{Test} Statistics</h2>' +
+        '<table class="statistics" id="total-stats"><thead><tr>' +
+        '<th class="stats-col-name">Total Statistics</th>' + statHeaders +
+        '</tr></thead></table>' +
+        '<table class="statistics" id="tag-stats"><thead><tr>' +
+        '<th class="stats-col-name">Statistics by Tag</th>' + statHeaders +
+        '</tr></thead></table>' +
+        '<table class="statistics" id="suite-stats"><thead><tr>' +
+        '<th class="stats-col-name">Statistics by Suite</th>' + statHeaders +
+        '</tr></thead></table>';
+    $(testOrTask(statTable)).appendTo('#statistics-container');
+    util.map(['total', 'tag', 'suite'], addStatTable);
+    addTooltipsToElapsedTimes();
+    enableStatisticsSorter();
+}
+function addTooltipsToElapsedTimes() {
+    $('.stats-col-elapsed').attr('title',
+        testOrTask('Total execution time of these {test}s. ') +
+        'Excludes suite setups and teardowns.');
+    $('#suite-stats').find('.stats-col-elapsed').attr('title',
+        'Total execution time of this suite.');
+}
+function enableStatisticsSorter() {
+    $.tablesorter.addParser({
+        id: 'statName',
+        type: 'numeric',
+        is: function(s) {
+            return false;  // do not auto-detect
+        },
+        format: function(string, table, cell, cellIndex) {
+            // Rows have class in format 'row-<index>'.
+            var index = $(cell).parent().attr('class').substring(4);
+            return parseInt(index);
+        }
+    });
+    $(".statistics").tablesorter({
+        sortInitialOrder: 'desc',
+        headers: {0: {sorter: 'statName', sortInitialOrder: 'asc'},
+                  6: {sorter: false}}
+    });
+}
+function addStatTable(tableName) {
+    var stats = window.testdata.statistics()[tableName];
+    if (tableName == 'tag' && stats.length == 0) {
+        renderNoTagStatTable();
+    } else {
+        renderStatTable(tableName, stats);
+    }
+}
+function renderNoTagStatTable() {
+    $('<tbody><tr class="row-0">' +
+        '<td class="stats-col-name">No Tags</td>' +
+        '<td class="stats-col-stat"></td>' +
+        '<td class="stats-col-stat"></td>' +
+        '<td class="stats-col-stat"></td>' +
+        '<td class="stats-col-stat"></td>' +
+        '<td class="stats-col-elapsed"></td>' +
+        '<td class="stats-col-graph">' +
+          '<div class="empty-graph"></div>' +
+        '</td>' +
+      '</tr></tbody>').appendTo('#tag-stats');
+}
+function renderStatTable(tableName, stats) {
+    var template = tableName + 'StatisticsRowTemplate';
+    var tbody = $('<tbody></tbody>');
+    for (var i = 0, len = stats.length; i < len; i++) {
+        $.tmpl(template, stats[i], {index: i}).appendTo(tbody);
+    }
+    tbody.appendTo('#' + tableName + '-stats');
+}
+$.template('statColumnsTemplate',
+    '<td class="stats-col-stat">${total}</td>' +
+    '<td class="stats-col-stat">${pass}</td>' +
+    '<td class="stats-col-stat">${fail}</td>' +
+    '<td class="stats-col-stat">${skip}</td>' +
+    '<td class="stats-col-elapsed">${elapsed}</td>' +
+    '<td class="stats-col-graph">' +
+      '{{if total}}' +
+      '<div class="graph">' +
+        '<div class="pass-bar" style="width: ${passWidth}%" title="${passPercent}%"></div>' +
+        '<div class="fail-bar" style="width: ${failWidth}%" title="${failPercent}%"></div>' +
+        '<div class="skip-bar" style="width: ${skipWidth}%" title="${skipPercent}%"></div>' +
+      '</div>' +
+      '{{else}}' +
+      '<div class="empty-graph"></div>' +
+      '{{/if}}' +
+    '</td>'
+);
+$.template('suiteStatusMessageTemplate',
+    '${total} {{= testOrTask("{test}")}}{{if total != 1}}s{{/if}} total, ' +
+    '${pass} passed, ${fail} failed, ${skip} skipped'
+);
+// For complete cross-browser experience..
+// http://www.quirksmode.org/js/events_order.html
+function stopPropagation(event) {
+    var event = event || window.event;
+    event.cancelBubble = true;
+    if (event.stopPropagation)
+        event.stopPropagation();
+}
+const theme = function () {
+    const storageKey = 'theme-preference';
+    const urlParams = new URLSearchParams(window.location.search);
+    var storage;
+    var theme;
+    function init(givenStorage) {
+        storage = givenStorage;
+        theme = { value: getPreference() };
+        document.body.setAttribute('data-theme', theme.value);
+        reflectPreference();
+        window.matchMedia('(prefers-color-scheme: dark)')
+            .addEventListener('change', ({matches:isDark}) => {
+                theme.value = isDark ? 'dark' : 'light';
+                setPreference();
+            });
+        window.addEventListener('storage', ({key, newValue}) => {
+            if (key === storage.fullKey(storageKey)) {
+                theme.value = newValue === 'dark' ? 'dark' : 'light';
+                setPreference();
+            }
+        });
+    }
+    function getPreference() {
+        if (urlParams.has('theme')) {
+            var urlTheme = urlParams.get('theme') === 'dark' ? 'dark' : 'light';
+            storage.set(storageKey, urlTheme);
+            urlParams.delete('theme');
+            return urlTheme;
+        }
+        if (storage.get(storageKey))
+            return storage.get(storageKey) === 'dark' ? 'dark' : 'light';
+        return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    function setPreference() {
+        storage.set(storageKey, theme.value);
+        reflectPreference();
+    }
+    function reflectPreference() {
+        document.body.setAttribute('data-theme', theme.value);
+        document.querySelector('#theme-toggle')?.setAttribute('aria-label', theme.value);
+        const event = new Event('theme-change', {value: theme.value});
+        document.dispatchEvent(event);
+    }
+    function onClick() {
+        theme.value = theme.value === 'light' ? 'dark' : 'light';
+        document.body.setAttribute('theme-toggled', "");
+        setPreference();
+    }
+    return {init: init, getPreference: getPreference, setPreference: setPreference,
+        reflectPreference: reflectPreference, onClick: onClick};
+}();
+</script>
+<script type="text/javascript">
+storage = function () {
+    var prefix = 'robot-framework-';
+    var storage;
+    function init(user) {
+        if (user)
+            prefix += user + '-';
+        storage = getStorage();
+    }
+    function getStorage() {
+        // Use localStorage if it's accessible, normal object otherwise.
+        // Inspired by https://stackoverflow.com/questions/11214404
+        try {
+            localStorage.setItem(prefix, prefix);
+            localStorage.removeItem(prefix);
+            return localStorage;
+        } catch (exception) {
+            return {};
+        }
+    }
+    function get(key, defaultValue) {
+        var value = storage[fullKey(key)];
+        if (typeof value === 'undefined')
+            return defaultValue;
+        return value;
+    }
+    function set(key, value) {
+        storage[fullKey(key)] = value;
+    }
+    function fullKey(key) {
+        return prefix + key;
+    }
+    return {init: init, get: get, set: set, fullKey: fullKey};
+}();
+</script>
+<script type="text/javascript">
+window.output = {};
+</script>
+<script type="text/javascript">
+window.output["suite"] = [1,2,3,0,[],[0,0,64295],[[4,5,6,0,[],[0,26,64266],[[7,8,9,0,[],[0,32,64260],[],[[10,0,0,[],[0,364,63925,11],[[1,12,13,0,0,14,0,0,[1,366,11850],[[0,15,16,0,17,18,0,0,[1,368,11842],[[369,2,19]]],[0,20,16,0,21,0,0,0,[1,12210,6],[]]]],[0,22,0,0,0,23,0,0,[1,12221,11220],[[0,24,0,0,0,25,0,0,[1,12223,361],[[0,26,16,0,27,28,0,0,[1,12224,6],[]],[0,29,16,0,30,28,0,0,[1,12231,6],[]],[0,31,16,0,32,33,0,0,[1,12238,261],[]],[0,34,16,0,35,33,0,0,[1,12500,51],[]],[0,36,16,0,37,33,0,0,[1,12551,33],[]]]],[0,38,16,0,39,25,0,0,[1,12584,374],[[12586,2,40]]],[0,24,0,0,0,41,0,0,[1,12959,58],[[0,26,16,0,27,28,0,0,[1,12960,5],[]],[0,29,16,0,30,28,0,0,[1,12965,5],[]],[0,31,16,0,32,33,0,0,[1,12970,6],[]],[0,34,16,0,35,33,0,0,[1,12976,14],[]],[0,36,16,0,37,33,0,0,[1,12991,25],[]]]],[0,42,16,0,43,44,0,0,[1,13017,105],[[13018,2,45]]],[0,46,16,0,47,48,0,0,[1,13122,56],[[13123,2,49],[13155,2,50]]],[0,38,16,0,39,51,0,0,[1,13179,260],[[13180,2,52]]],[0,53,54,0,55,56,0,0,[1,13439,10002],[[23441,2,57]]]]],[0,58,0,0,0,0,0,0,[1,23442,13901],[[0,38,16,0,39,59,0,0,[1,23443,2341],[[23443,2,60]]],[0,24,0,0,0,61,0,0,[1,25783,11299],[[0,26,16,0,27,28,0,0,[1,25784,6],[]],[0,29,16,0,30,28,0,0,[1,25790,4],[]],[0,31,16,0,32,33,0,0,[1,25794,11237],[]],[0,34,16,0,35,33,0,0,[1,37031,23],[]],[0,36,16,0,37,33,0,0,[1,37055,27],[]]]],[0,62,16,0,63,61,0,0,[1,37083,260],[[37084,2,64]]]]],[0,65,0,0,0,0,0,0,[0,37344,23329],[[0,24,0,0,0,66,0,0,[1,37345,6249],[[0,26,16,0,27,28,0,0,[1,37346,4],[]],[0,29,16,0,30,28,0,0,[1,37350,6],[]],[0,31,16,0,32,33,0,0,[1,37356,6206],[]],[0,34,16,0,35,33,0,0,[1,43562,15],[]],[0,36,16,0,37,33,0,0,[1,43578,16],[]]]],[0,53,54,0,55,67,0,0,[1,43594,7001],[[50595,2,68]]],[0,62,16,0,63,66,0,0,[1,50595,228],[[50597,2,69]]],[0,42,16,0,43,70,0,0,[1,50825,587],[[50825,2,71]]],[0,38,16,0,39,72,0,0,[1,51412,238],[[51413,2,73]]],[0,24,0,0,0,74,0,0,[1,51651,6943],[[0,26,16,0,27,28,0,0,[1,51651,2],[]],[0,29,16,0,30,28,0,0,[1,51653,2],[]],[0,31,16,0,32,33,0,0,[1,51657,6912],[]],[0,34,16,0,35,33,0,0,[1,58568,12],[]],[0,36,16,0,37,33,0,0,[1,58581,13],[]]]],[0,75,16,0,76,77,0,0,[1,58594,10],[[58596,2,78]]],[0,53,54,0,55,79,0,0,[1,58604,2000],[[60604,2,80]]],[0,81,16,0,82,83,0,0,[0,60605,67],[[60605,2,84],[60667,2,85],[60668,5,11]]],[0,38,16,0,39,74,0,0,[3,60672,0],[]],[0,53,54,0,55,56,0,0,[3,60672,0],[]]]],[2,86,13,0,0,0,0,0,[1,60673,3615],[[0,87,16,0,88,0,0,0,[1,60674,3614],[]]]]]]],[],[1,0,1,0]]],[],[],[1,0,1,0]]],[],[],[1,0,1,0]];
+</script>
+<script type="text/javascript">
+window.output["strings"] = [];
+</script>
+<script type="text/javascript">
+window.output["strings"] = window.output["strings"].concat(["*","*MCF UI AUTOMATION","*C:\\Users\\AnilKumar\\OneDrive - Gojoko\\Desktop\\ROBOT FRAMEWORK\\MCF_UI_AUTOMATION","*..","*Test","*C:\\Users\\AnilKumar\\OneDrive - Gojoko\\Desktop\\ROBOT FRAMEWORK\\MCF_UI_AUTOMATION\\Test","*../Test","*Reevoloan","*C:\\Users\\AnilKumar\\OneDrive - Gojoko\\Desktop\\ROBOT FRAMEWORK\\MCF_UI_AUTOMATION\\Test\\reevoloan.robot","*../Test/reevoloan.robot","*Validate that Successful easy payment journey","*The text of element '//button[contains(text(),'Confirm payment detail')]' should have been 'confirm payment details' but it was 'confirm payment detail'.","*OpenBroser","*resource","*${reevo_salesforce_login_url}    browser=${browser_name}","*Open Browser","*SeleniumLibrary","*<p>Opens a new browser instance to the optional <code>url\x3c/code>.\x3c/p>","*${url}    ${browser}","*Opening browser 'Firefox' to base url '<a href=\"https://uat.customer.reevomoney.com/s/login/\">https://uat.customer.reevomoney.com/s/login/\x3c/a>'.","*Maximize Browser Window","*<p>Maximizes current browser window.\x3c/p>","*Fill the login Form","*username=${reevo_user_email_id}    password=${reevo_valid_password}","*WaitTimeOut","*//button","*Set Selenium Implicit Wait","*<p>Sets the implicit wait value used by Selenium.\x3c/p>","*15 sec","*Set Selenium Timeout","*<p>Sets the timeout that is used by various keywords.\x3c/p>","*Wait Until Page Contains Element","*<p>Waits until the element <code>locator\x3c/code> appears on the current page.\x3c/p>","*${xpath}","*Wait Until Element Is Visible","*<p>Waits until the element <code>locator\x3c/code> is visible.\x3c/p>","*Wait Until Element Is Enabled","*<p>Waits until the element <code>locator\x3c/code> is enabled.\x3c/p>","*Click Button","*<p>Clicks the button identified by <code>locator\x3c/code>.\x3c/p>","*Clicking button '//button'.","*//input[@placeholder=\"Enter your email...\"]","*Input Text","*<p>Types the given <code>text\x3c/code> into the text field identified by <code>locator\x3c/code>.\x3c/p>","*//input[@placeholder=\"Enter your email...\"]    ${username}","*Typing text 'priya.gojoko2811+41@gmail.com' into text field '//input[@placeholder=\"Enter your email...\"]'.","*Input Password","*<p>Types the given password into the text field identified by <code>locator\x3c/code>.\x3c/p>","*//input[@data-name=\"passwordInput\"]    ${password}","*Typing password into text field '//input[@data-name=\"passwordInput\"]'.","*Temporally setting log level to: NONE","*//button[contains(@class,\"slds-button\")]","*Clicking button '//button[contains(@class,\"slds-button\")]'.","*Sleep","*BuiltIn","*<p>Pauses the test executed for the given time.\x3c/p>","*10s","*Slept 10 seconds.","*Navigate to easy payment page","*//button[@title=\"Go to loan overview\"]","*Clicking button '//button[@title=\"Go to loan overview\"]'.","*//div[contains(@class,'mt-16')]//a","*Click Element","*<p>Click the element identified by <code>locator\x3c/code>.\x3c/p>","*Clicking element '//div[contains(@class,'mt-16')]//a'.","*Make a payment","*(//div[contains(@class,'paymentHeading')])[1]","*7s","*Slept 7 seconds.","*Clicking element '(//div[contains(@class,'paymentHeading')])[1]'.","*//input[contains(@class,'input-border-with-mask')]    ${arreras_amount}","*Typing text '100' into text field '//input[contains(@class,'input-border-with-mask')]'.","*//button[contains(@class,'btnLabel btn verify-btn')]","*Clicking button '//button[contains(@class,'btnLabel btn verify-btn')]'.","*//button[contains(text(),'Confirm payment detail')]","*Execute Javascript","*<p>Executes the given JavaScript code with possible arguments.\x3c/p>","*window.scrollTo(0, document.body.scrollHeight)","*Executing JavaScript:\nwindow.scrollTo(0, document.body.scrollHeight)\nWithout any arguments.","*2s","*Slept 2 seconds.","*Element Text Should Be","*<p>Verifies that element <code>locator\x3c/code> contains exact the text <code>expected\x3c/code>.\x3c/p>","*//button[contains(text(),'Confirm payment detail')]    confirm payment details","*Verifying element '//button[contains(text(),'Confirm payment detail')]' contains exact text 'confirm payment details'.","*\x3c/td>\x3c/tr><tr><td colspan=\"3\"><a href=\"selenium-screenshot-35.png\"><img src=\"selenium-screenshot-35.png\" width=\"800px\">\x3c/a>","*Close Browser Session","*Close Browser","*<p>Closes the current browser.\x3c/p>"]);
+</script>
+<script type="text/javascript">
+window.output["stats"] = [[{"elapsed":"00:01:04","fail":1,"label":"All Tests","pass":0,"skip":0}],[],[{"elapsed":"00:01:04","fail":1,"id":"s1","label":"MCF UI AUTOMATION","name":"MCF UI AUTOMATION","pass":0,"skip":0},{"elapsed":"00:01:04","fail":1,"id":"s1-s1","label":"MCF UI AUTOMATION.Test","name":"Test","pass":0,"skip":0},{"elapsed":"00:01:04","fail":1,"id":"s1-s1-s1","label":"MCF UI AUTOMATION.Test.Reevoloan","name":"Reevoloan","pass":0,"skip":0}]];
+</script>
+<script type="text/javascript">
+window.output["errors"] = [];
+</script>
+<script type="text/javascript">
+window.output["baseMillis"] = 1720158772492;
+</script>
+<script type="text/javascript">
+window.output["generated"] = 64317;
+</script>
+<script type="text/javascript">
+window.output["expand_keywords"] = null;
+</script>
+<script type="text/javascript">
+window.settings = {"defaultLevel":"INFO","minLevel":"INFO","reportURL":"report.html","rpa":false,"splitLogBase":"log","title":""};
+</script>
+<title></title>
+</head>
+<body data-theme="dark">
+<div id="javascript-disabled">
+  <h1>Opening Robot Framework log failed</h1>
+  <ul>
+    <li>Verify that you have <b>JavaScript enabled</b> in your browser.</li>
+    <li>Make sure you are using a <b>modern enough browser</b>. If using Internet Explorer, version 11 is required.</li>
+    <li>Check are there messages in your browser's <b>JavaScript error log</b>. Please report the problem if you suspect you have encountered a bug.</li>
+  </ul>
+</div>
+<script type="text/javascript">removeJavaScriptDisabledWarning();</script>
+<div id="header"></div>
+<div id="statistics-container"></div>
+
+<script type="text/javascript">
+$(document).ready(function() {
+    storage.init();
+    theme.init(storage);
+    try {
+        var topsuite = window.testdata.suite();
+    } catch (error) {
+        addJavaScriptDisabledWarning(error);
+        return;
+    }
+    initLayout(topsuite.name, 'Log');
+    theme.reflectPreference();
+    addStatistics();
+    addErrors();
+    addExecutionLog(topsuite);
+    addLogLevelSelector(window.settings['minLevel'], window.settings['defaultLevel']);
+    if (window.location.hash) {
+        makeElementVisible(window.location.hash.substring(1));
+    } else {
+        expandSuite(topsuite);
+    }
+    setTimeout(function () { loadAndExpandElementIds(window.output['expand_keywords']); }, 100);
+});
+
+function addLogLevelSelector(minLevel, defaultLevel) {
+    var controller = LogLevelController(minLevel, defaultLevel);
+    if (controller.showLogLevelSelector()) {
+        var selector = $.tmpl('logLevelSelectorTemplate', controller);
+        selector.find('select').val(controller.defaultLogLevel());
+        selector.appendTo($('#top-right-header'));
+        $('#report-or-log-link').find('a').css({'border-bottom-left-radius': '0'});
+        setMessageVisibility(controller.defaultLogLevel());
+    }
+}
+
+function addErrors() {
+    var errors = window.testdata.errorIterator();
+    if (errors.hasNext()) {
+        $.tmpl('errorHeaderTemplate').appendTo($('body'));
+        drawErrorsRecursively(errors, $('#errors'));
+    }
+}
+
+function drawErrorsRecursively(errors, target) {
+    var elements = popFromIterator(errors, 10);
+    $.tmpl('errorTemplate', elements).appendTo(target);
+    if (errors.hasNext())
+        setTimeout(function () { drawErrorsRecursively(errors, target); }, 0);
+    else {
+        // Errors may have moved scroll position. Resetting location re-scrolls.
+        if (window.location.hash)
+            window.location.replace(window.location.hash);
+    }
+}
+
+function popFromIterator(iterator, upTo) {
+    var result = [];
+    while (iterator.hasNext() > 0 && result.length < upTo)
+        result.push(iterator.next());
+    return result;
+}
+
+function makeElementVisible(id) {
+    window.testdata.ensureLoaded(id, function (ids) {
+        util.map(ids, expandElementWithId);
+        if (ids.length) {
+            expandFailed(window.testdata.findLoaded(util.last(ids)));
+            window.location.hash = id;
+            document.getElementById(id).scrollIntoView();
+        }
+    });
+}
+
+function addExecutionLog(main) {
+    $('body').append($(testOrTask('<h2>{Test} Execution Log</h2>')),
+                     $.tmpl('suiteTemplate', main));
+}
+</script>
+
+<script type="text/x-jquery-tmpl" id="totalStatisticsRowTemplate">
+  <tr class="row-${$item.index}">
+    <td class="stats-col-name">
+      <div class="stat-name">
+        <span>{{html label}}</span>
+      </div>
+    </td>
+    {{tmpl($data) 'statColumnsTemplate'}}
+  </tr>
+</script>
+
+<script type="text/x-jquery-tmpl" id="tagStatisticsRowTemplate">
+  <tr class="row-${$item.index}">
+    <td class="stats-col-name" title="{{html doc}}">
+      <div class="stat-name">
+        <span>{{html label}}</span>
+        {{if info}}(${info}){{/if}}
+      </div>
+      <div class="tag-links">
+        {{each links}}
+        <span>[<a href="{{html $value.url}}" title="{{html $value.url}}">{{html $value.title}}</a>]</span>
+        {{/each}}
+      </div>
+    </td>
+    {{tmpl($data) 'statColumnsTemplate'}}
+  </tr>
+</script>
+
+<script type="text/x-jquery-tmpl" id="suiteStatisticsRowTemplate">
+  <tr onclick="makeElementVisible('${id}')" class="row-${$item.index}">
+    <td class="stats-col-name" title="{{html label}}">
+      <div class="stat-name">
+        <a href="#${id}"><span class="parent-name">{{html formatParentName}}</span>{{html name}}</a>
+      </div>
+    </td>
+    {{tmpl($data) 'statColumnsTemplate'}}
+  </tr>
+</script>
+
+<script type="text/x-jquery-tmpl" id="errorHeaderTemplate">
+  <h2>{{= testOrTask('{Test}')}} Execution Errors</h2>
+  <table id="errors"></table>
+</script>
+
+<script type="text/x-jquery-tmpl" id="errorTemplate">
+  <tr id="${id}" class="message-row">
+    <td class="error-time">
+      {{if link}}
+      <a onclick="makeElementVisible('${link}')" href="#${link}" title="Link to details">${date} ${time}</a>
+      {{else}}
+      ${date} ${time}
+      {{/if}}
+    </td>
+    <td class="${level.toLowerCase()} level"><span class="label ${level.toLowerCase()}">${level}</span></td>
+    <td class="message">{{html text}}</td>
+    <td class="select-message" onclick="javascript:selectMessage('${id}')" title="Select message text">
+      <div></div>
+    </td>
+  </tr>
+</script>
+
+<script type="text/x-jquery-tmpl" id="suiteTemplate">
+  <div id="${id}" class="suite">
+    <div class="element-header closed" onclick="toggleSuite('${id}')">
+      <div class="element-header-left" title="SUITE  {{html name}}  [${status}]">
+        <span class="elapsed" title="Elapsed time">${times.elapsedTime}</span>
+        <span class="label ${status.toLowerCase()}">SUITE</span>
+        <span class="name">{{html name}}</span>
+      </div>
+      <div class="element-header-right" onclick="stopPropagation(event)" title="">
+        <a class="expand" title="Expand all" href="javascript:expandAll('${id}')"></a>
+        <a class="collapse" title="Collapse all" href="javascript:collapseAll('${id}')"></a>
+        <a class="link" title="Link to this suite" href="#${id}" onclick="makeElementVisible('${id}')"></a>
+      </div>
+      <div class="element-header-toggle" title="Toggle visibility"></div>
+    </div>
+    <div class="children">
+      <table class="metadata">
+        <tr>
+          <th>Full Name:</th>
+          <td>{{html fullName}}</td>
+        </tr>
+        {{if doc()}}
+        <tr>
+          <th>Documentation:</th>
+          <td class="doc">{{html doc()}}</td>
+        </tr>
+        {{/if}}
+        {{each metadata}}
+        <tr>
+          <th>{{html $value[0]}}:</th>
+          <td class="doc">{{html $value[1]}}</td>
+        </tr>
+        {{/each}}
+        {{if source}}
+        <tr>
+          <th>Source:</th>
+          {{if relativeSource}}
+          <td><a href="${relativeSource}">{{html source}}</a></td>
+          {{else}}
+          <td>{{html source}}</td>
+          {{/if}}
+        </tr>
+        {{/if}}
+        <tr>
+          <th>Start / End / Elapsed:</th>
+          <td>${times.startTime} / ${times.endTime} / ${times.elapsedTime}</td>
+        </tr>
+        <tr>
+          <th>Status:</th>
+          <td>{{tmpl($data) 'suiteStatusMessageTemplate'}}</td>
+        </tr>
+        {{if message()}}
+        <tr>
+          <th>Message:</th>
+          <td class="message">{{html message()}}</td>
+        </tr>
+        {{/if}}
+      </table>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="testTemplate">
+  <div id="${id}" class="test">
+    <div class="element-header closed" onclick="toggleTest('${id}')">
+      <div class="element-header-left" title="{{= testOrTask('{TEST}')}}  {{html name}}  [${status}]">
+        <span class="elapsed" title="Elapsed time">${times.elapsedTime}</span>
+        <span class="label ${status.toLowerCase()}">{{= testOrTask('{TEST}')}}</span>
+        <span class="name">{{html name}}</span>
+      </div>
+      <div class="element-header-right" onclick="stopPropagation(event)" title="">
+        <a class="expand" title="Expand all" href="javascript:expandAll('${id}')"></a>
+        <a class="collapse" title="Collapse all" href="javascript:collapseAll('${id}')"></a>
+        <a class="link" title="Link to this {{= testOrTask('{test}')}}" href="#${id}" onclick="makeElementVisible('${id}')"></a>
+      </div>
+      <div class="element-header-toggle" title="Toggle visibility"></div>
+    </div>
+    <div class="children">
+      <table class="metadata">
+        <tr>
+          <th>Full Name:</th>
+          <td>{{html fullName}}</td>
+        </tr>
+        {{if doc()}}
+        <tr>
+          <th>Documentation:</th>
+          <td class="doc">{{html doc()}}</td>
+        </tr>
+        {{/if}}
+        {{if tags.length}}
+        <tr>
+          <th>Tags:</th>
+          <td>{{html tags.join(', ')}}</td>
+        </tr>
+        {{/if}}
+        {{if timeout}}
+        <tr>
+          <th>Timeout:</th>
+          <td>{{html timeout}}</td>
+        </tr>
+        {{/if}}
+        <tr>
+          <th>Start / End / Elapsed:</th>
+          <td>${times.startTime} / ${times.endTime} / ${times.elapsedTime}</td>
+        </tr>
+        <tr>
+          <th>Status:</th>
+          <td><span class="label ${status.toLowerCase()}">${status}</span></td>
+        </tr>
+        {{if message()}}
+        <tr>
+          <th>Message:</th>
+          <td class="message">{{html message()}}</td>
+        </tr>
+        {{/if}}
+      </table>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="keywordTemplate">
+  <div id="${id}" class="keyword">
+    <div class="element-header closed" onclick="toggleKeyword('${id}')">
+      <div class="element-header-left" title="${type}  {{if name}}{{html fullName}}  {{/if}}[${status}]">
+        <span class="elapsed" title="Elapsed time">${times.elapsedTime}</span>
+        <span class="label ${status.toLowerCase()}">${type}</span>
+        <span class="assign">{{html assign}}</span>
+        <span class="name"><span class="parent-name">{{html libname}}{{if libname}} . {{/if}}</span>{{html name}}</span>
+        &nbsp;
+        <span class="arg">{{html arguments}}</span>
+      </div>
+      <div class="element-header-right" onclick="stopPropagation(event)">
+        <a class="expand" title="Expand all" href="javascript:expandAll('${id}')"></a>
+        <a class="collapse" title="Collapse all" href="javascript:collapseAll('${id}')"></a>
+        <a class="link" title="Link to this item" href="#${id}" onclick="makeElementVisible('${id}')"></a>
+      </div>
+      <div class="element-header-toggle" title="Toggle visibility"></div>
+    </div>
+    <div class="children">
+      <table class="metadata keyword-metadata">
+        {{if doc()}}
+        <tr>
+          <th>Documentation:</th>
+          <td class="doc">{{html doc()}}</td>
+        </tr>
+        {{/if}}
+        {{if tags}}
+        <tr>
+          <th>Tags:</th>
+          <td>{{html tags}}</td>
+        </tr>
+        {{/if}}
+        {{if timeout}}
+        <tr>
+          <th>Timeout:</th>
+          <td>{{html timeout}}</td>
+        </tr>
+        {{/if}}
+        <tr>
+          <th>Start / End / Elapsed:</th>
+          <td>${times.startTime} / ${times.endTime} / ${times.elapsedTime}</td>
+        </tr>
+        {{if message()}}
+        <tr>
+          <th>Message:</th>
+          <td class="message">{{html message()}}</td>
+        </tr>
+        {{/if}}
+      </table>
+    </div>
+  </div>
+</script>
+
+<script type="text/x-jquery-tmpl" id="messageTemplate">
+  <table id="${id}" class="messages ${level.toLowerCase()}-message">
+    <tr class="message-row">
+      <td class="time">${time}</td>
+      <td class="${level.toLowerCase()} level"><span class="label ${level.toLowerCase()}">${level}</span></td>
+      <td class="message">{{html text}}</td>
+      <td class="select-message" onclick="javascript:selectMessage('${id}')" title="Select message text">
+        <div></div>
+      </td>
+    </tr>
+  </table>
+</script>
+
+<script type="text/x-jquery-tmpl" id="logLevelSelectorTemplate">
+  <div id="log-level-selector">
+  Log level:
+    <select onchange="logLevelSelected(this.options[selectedIndex].value)">
+      <option value="3">WARN</option>
+      <option value="2">INFO</option>
+      <option value="1">DEBUG</option>
+      {{if showTrace()}}<option value="0">TRACE</option>{{/if}}
+    </select>
+  </div>
+</script>
+
+</body>
+</html>
