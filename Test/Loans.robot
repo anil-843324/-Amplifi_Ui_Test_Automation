@@ -1,6 +1,6 @@
 *** Settings ***
 Library    SeleniumLibrary
-Test Setup        OpenBroser    ${mcf_salesforce_login_url}    ${headless_browser_firefox}
+Test Setup        OpenBroser    ${mcf_salesforce_login_url}    ${browser_name}
 Test Teardown    Close Browser Session
 Resource        resource.robot
 
@@ -75,9 +75,11 @@ Filling netbanking details
     IF    '${paymentConditon}' == 'Success'
         Click Button    //button[@id="approveButton"]
         Sleep    18s
+        WaitTimeOut     //h5[contains(@class,'my-4')]
         Element Text Should Be    //h5[contains(@class,'my-4')]    Payment completed
     ELSE
         Click Button    //button[@id="declineButton"]
         Sleep    18s
+        WaitTimeOut     //h5[contains(@class,'my-4')]
         Element Text Should Be    //h5[contains(@class,'my-4')]    Not successful
     END
