@@ -10,11 +10,12 @@ Validate that Successful easy payment journey
     Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
     Navigate to easy payment page
     Make a payment
-    Filling netbanking details
-# Validate that Unsuccessful easy payment journey
-#     Fill the login Form    username=${user_email_id}    password=${valid_password} 
-#     Navigate to easy payment page
-#     Make a payment
+    Filling netbanking details    paymentConditon=Success
+Validate that Unsuccessful easy payment journey
+    Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
+    Navigate to easy payment page
+    Make a payment
+    Filling netbanking details    Failed
 
 *** Keywords ***
 WaitTimeOut
@@ -59,6 +60,7 @@ Make a payment
 
 Filling netbanking details
     # WaitTimeOut    //label[contains(text(),'Online banking')]
+    [Arguments]    ${paymentConditon}
     Sleep    10s
     Input Text    //input[@name="customer-number"]    text=123456789012
     Click Button    //button[@id="customer-number-login"]
@@ -69,9 +71,13 @@ Filling netbanking details
     Click Button    //button[@id="login-button"]
     WaitTimeOut    (//button[contains(text(),'Select account')])[1]
     Click Button    (//button[contains(text(),'Select account')])[1]
-    Click Button    //button[@id="approveButton"]
-    Sleep    15s
-    Element Text Should Be    //h5    Payment completed
-    # Click Button    //button[@aria-label="Aggregator"]
-
     
+    IF    '${paymentConditon}' == 'Success'
+        Click Button    //button[@id="approveButton"]
+        Sleep    18s
+        Element Text Should Be    //h5    Payment completed
+    ELSE
+        Click Button    //button[@id="declineButton"]
+        Sleep    18s
+        Element Text Should Be    //h5    Not successful
+    END
