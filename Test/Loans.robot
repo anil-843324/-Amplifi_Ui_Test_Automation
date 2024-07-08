@@ -75,9 +75,9 @@ Filling netbanking details
     IF    '${paymentConditon}' == 'Success'
         Click Button    //button[@id="approveButton"]
         Sleep    18s
-        Element Text Should Be    //h5    Payment completed
+        Element Text Should Be    //h5[contains(@class,'my-4')]    Payment completed
     ELSE
         Click Button    //button[@id="declineButton"]
         Sleep    18s
-        Element Text Should Be    //h5    Not successful
+        Element Text Should Be    //h5[contains(@class,'my-4')]    Not successful
     END
