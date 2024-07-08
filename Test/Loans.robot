@@ -75,11 +75,15 @@ Filling netbanking details
     IF    '${paymentConditon}' == 'Success'
         Click Button    //button[@id="approveButton"]
         Sleep    18s
-        WaitTimeOut     //h5[contains(@class,'my-4')]
-        Element Text Should Be    //h5[contains(@class,'my-4')]    Payment completed
+        
+        # Element Text Should Be    Execute Javascript    document.querySelectorAll("h5")[0].innerText    Payment completed
+        ${text}    Execute Javascript    return document.querySelectorAll("h5")[0].innerText
+        Should Be Equal As Strings    ${text}    Payment completed
     ELSE
         Click Button    //button[@id="declineButton"]
         Sleep    18s
-        WaitTimeOut     //h5[contains(@class,'my-4')]
-        Element Text Should Be    //h5[contains(@class,'my-4')]    Not successful
+        
+        # Element Text Should Be    Execute Javascript    document.querySelectorAll("h5")[0].innerText    Not successful
+        ${text}    Execute Javascript    return document.querySelectorAll("h5")[0].innerText
+        Should Be Equal As Strings    ${text}    Not successful
     END
