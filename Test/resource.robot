@@ -20,7 +20,7 @@ ${reevo_salesforce_login_url}        https://uat.customer.reevomoney.com/s/login
 ${browser_name}        Firefox
 ${headless_browser_firefox}    headlessfirefox
 ${headless_browser_chrome}    headlesschrome
-
+${mcf_url}    https://uat.mycommunityfinance.co.uk/
 ${address}       "57 Ashdale Road Walton Liverpool L9 2AA"
 *** Keywords ***
 OpenBroser

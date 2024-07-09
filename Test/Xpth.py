@@ -1,5 +1,5 @@
 ##Organic Loans journey locators
-cookie_XPATH="//button[contains(text(),'Accept')]"
+cookie_XPATH="//button[contains(text(),'Accept all cookies')]"
 loans_XPATH="//button[contains(text(),'Loans')]"
 getMypersonalisedQuote_XPATH="//button[contains(text(),'Get my personalised quote')]"
 
@@ -38,12 +38,12 @@ prevSelectAddress_XPATH="(//select[@formcontrolname='addressFormat'])[2]"
 whenDidYouMoveInMoreThanThree_XPATH="//label[contains(text(),' More than 3 years ago ')]"
 whenDidYouMoveInLessThanThree_XPATH="//label[contains(text(),' Less than 3 years ago ')]"
 income_XPATH="input#income"
-dependentOnYou_XPATH="//label[@for=\"mcf-radio-button-11\"]"
-livingSituation_XPATH="(//select[@id=\"livingSituation\"])[1]"
-rent_XPATH=input#mortage
-employmentStatus_XPATH="(//select[@id=\"livingSituation\"])[2]"
-jobTitle_XPATH="//input[@aria-autocomplete=\"list\"]"
-companyName_XPATH="//input[@aria-label=\"EmployerName\"]"
+dependentOnYou_XPATH="//label[@for='mcf-radio-button-11']"
+livingSituation_XPATH="(//select[@id='livingSituation'])[1]"
+rent_XPATH="//input[@id='mortage']"
+employmentStatus_XPATH="(//select[@id='livingSituation'])[2]"
+jobTitle_XPATH="//input[@aria-autocomplete='list']"
+companyName_XPATH="//input[@aria-label='EmployerName']"
 
 
 offerURL_PATH="(//lightning-layout-item[contains(@class,'slds-size_12-of-12')])[2]"
