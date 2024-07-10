@@ -25,6 +25,7 @@ jobs:
           pip install robotframework
           pip install robotframework-seleniumlibrary
           pip install robotframework-datadriver
+          pip install -U robotframework-datadriver[XLS]
    
       - name: Test with RobotFramework
         run: robot .  
