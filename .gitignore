@@ -6,3 +6,4 @@ Demo.robot
 /results/*.xml
 __pycache__
 
+Demo2.robot

@@ -6,7 +6,7 @@ getMypersonalisedQuote_XPATH="//button[contains(text(),'Get my personalised quot
 
 editButton_XPATH="//div[contains(text(),'Edit')]"
 selectLoanMonths_XPATH="(//select[contains(@class,'form-control')])[1]"
-borrowLoanAmount_XPATH="input#borrow_loan_amt"
+borrowLoanAmount_XPATH="//input[@id='borrow_loan_amt']"
 
 useLoanFor_XPATH="//label[contains(text(),'Other')]"
 pleaseSpecify_XPATH="//input[@aria-label='loanPurposeOther']"
@@ -48,3 +48,6 @@ companyName_XPATH="//input[@aria-label='EmployerName']"
 
 offerURL_PATH="(//lightning-layout-item[contains(@class,'slds-size_12-of-12')])[2]"
 quoteRejected_PATH="(//h1)"
+
+
+
