@@ -9,6 +9,7 @@ Library    DataDriver    file=resources/ValidDRSTESTDATA.xlsx    sheet_name=Shee
 Test Template    Validate Organic Loan Application with Valid Test Data
 Library    DateTime
 Library    String
+Library    Library/MyLibrary.py
 
 *** Test Cases ***
 Validate Organic Loan Application ${Title} ${Forename} ${Surname} ${DOB} ${Employment_Sector} ${Date_Of_Entry_On_Test_Database} ${Original_Dob} ${Phone_Number} ${Postcode} ${loanval} ${loanterm} ${RentOrMortgage} ${annualgrossincome} ${Employer} ${EmploymentStatus} ${Purpose} ${PurposeIfOther} ${Outgoings} ${FullAddress} ${AddressIndex}   
@@ -116,8 +117,8 @@ Validate Organic Loan Application with Valid Test Data
     Sleep    2s
     WaitTimeOut    //lightning-layout[contains(@class,'header')]
     ${actual_loan_offer}=    Get Location
-    Log To Console    ${actual_loan_offer}
-    # Should Be Equal As Strings    ${actual_loan_offer}    loan-offer
+    ${actual_loan_offer}    extract path segment    ${actual_loan_offer}
+    Should Be Equal As Strings    ${actual_loan_offer}    loan-offer
 
 
     
