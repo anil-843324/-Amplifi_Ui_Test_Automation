@@ -10,13 +10,13 @@ Variables    Utilities.py
 
 *** Test Cases ***
 Validate that Successful easy payment journey
-    OpenBroser    ${mcf_salesforce_login_url}    ${browser_name}
+    OpenBroser    ${mcf_salesforce_login_url}    ${headless_browser_firefox}
     Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
     Navigate to easy payment page
     Make a payment
     Filling netbanking details    paymentConditon=Success
 Validate that Unsuccessful easy payment journey
-    OpenBroser    ${mcf_salesforce_login_url}    ${browser_name}
+    OpenBroser    ${mcf_salesforce_login_url}    ${headless_browser_firefox}
     Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
     Navigate to easy payment page
     Make a payment

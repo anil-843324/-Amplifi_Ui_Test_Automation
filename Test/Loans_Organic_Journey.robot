@@ -17,7 +17,6 @@ Validate Organic Loan Application ${Title} ${Forename} ${Surname} ${DOB} ${Emplo
 Validate Organic Loan Application with Valid Test Data
     [Arguments]    ${Title}    ${Forename}    ${Surname}    ${DOB}    ${Employment_Sector}    ${Date_Of_Entry_On_Test_Database}    ${Original_Dob}    ${Phone_Number}    ${Postcode}    ${loanval}    ${loanterm}    ${RentOrMortgage}    ${annualgrossincome}    ${Employer}    ${EmploymentStatus}    ${Purpose}    ${PurposeIfOther}    ${Outgoings}    ${FullAddress}    ${AddressIndex}   
     OpenBroser    ${mcf_url}    ${headless_browser_firefox}
-    Log To Console    ${DOB}
     ${date_parts}    Split String    ${DOB}    ${SPACE}    
     ${date}    Split String    ${date_parts[0]}    ${DASH}   
 
