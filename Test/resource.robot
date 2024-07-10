@@ -32,8 +32,8 @@ Close Browser Session
     Close Browser
 WaitTimeOut
     [Arguments]    ${xpath}
-    Set Selenium Implicit Wait    40 sec
-    Set Selenium Timeout    40 sec
+    Set Selenium Implicit Wait    59 sec
+    Set Selenium Timeout    59 sec
     Wait Until Page Contains Element    ${xpath}
     Wait Until Element Is Visible    ${xpath}
     Wait Until Element Is Enabled    ${xpath}

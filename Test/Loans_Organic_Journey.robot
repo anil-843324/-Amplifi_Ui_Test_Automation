@@ -19,7 +19,7 @@ Validate Organic Loan Application with Valid Test Data
     OpenBroser    ${mcf_url}    ${headless_browser_firefox}
     ${date_parts}    Split String    ${DOB}    ${SPACE}    
     ${date}    Split String    ${date_parts[0]}    ${DASH}   
-
+    Log To Console    ${Forename}  ${Surname}
     # Get Current URL
 # Navigat to loan application form
     WaitTimeOut    ${cookie_XPATH}
@@ -68,7 +68,7 @@ Validate Organic Loan Application with Valid Test Data
     Input Text    locator=${DD_XPATH}    text=${date[2]}
     Input Text    locator=${MM_XPATH}    text= ${date[1]} 
     Input Text    locator=${YYYY_XPATH}    text=${date[0]} 
-    Log To Console    ${DOB}
+    
     Execute Javascript    document.querySelectorAll("label.sm-bold")[5].scrollIntoView(true)
     Sleep    2s
     Input Text    locator=${email_XPATH}    text=${random_email}
