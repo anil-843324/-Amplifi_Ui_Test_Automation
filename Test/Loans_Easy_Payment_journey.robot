@@ -3,8 +3,8 @@ Library    SeleniumLibrary
 # Test Setup        OpenBroser    ${mcf_salesforce_login_url}    ${browser_name}
 Test Teardown    Close Browser Session
 Resource        resource.robot
-Variables    Xpth.py
-Variables    Utilities.py
+# Variables    Xpth.py
+# Variables    Utilities.py
 
 
 
@@ -51,11 +51,13 @@ Make a payment
     Click Element    (//div[contains(@class,'paymentHeading')])[1]
     Input Text    //input[contains(@class,'input-border-with-mask')]    ${arreras_amount}
     Click Button    //button[contains(@class,'btnLabel btn verify-btn')]
+    
     WaitTimeOut    //button[contains(text(),'Confirm payment details')]
     Execute JavaScript    window.scrollTo(0, document.body.scrollHeight)
     Sleep    2s
     Element Text Should Be    //button[contains(text(),'Confirm payment details')]    confirm payment details
     Click Button    //button[contains(text(),'Confirm payment details')]
+    
     WaitTimeOut    (//span[contains(@class,'order-first')])[2]
     Click Element    (//input[@type="radio"])[2]
     Execute JavaScript    window.scrollTo(0, document.body.scrollHeight)

@@ -1,11 +1,11 @@
-.idea
-/results/*.log
-/results/*.png
+
+results/*
 Demo.robot
-/results/*.html
-/results/*.xml
+
 __pycache__
 
 Demo2.robot
 
 
+
+.idea

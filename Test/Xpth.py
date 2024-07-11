@@ -1,4 +1,4 @@
-##Organic Loans journey locators
+##Organic Loans journey locators(MCF and REEVO)
 cookie_XPATH="//button[contains(text(),'Accept all cookies')]"
 loans_XPATH="//button[contains(text(),'Loans')]"
 getMypersonalisedQuote_XPATH="//button[contains(text(),'Get my personalised quote')]"
@@ -50,4 +50,5 @@ offerURL_PATH="(//lightning-layout-item[contains(@class,'slds-size_12-of-12')])[
 quoteRejected_PATH="(//h1)"
 
 
+# MCF xpath
 
