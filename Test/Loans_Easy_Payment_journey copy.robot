@@ -18,7 +18,7 @@ Resource        ../PO/SF/MakePaymentPage.robot
 
 *** Test Cases ***
 Validate that Successful easy payment journey
-    OpenBroser    ${mcf_salesforce_login_url}    ${firefox_browser}
+    OpenBroser    ${mcf_salesforce_login_url}    ${headless_browser_firefox}
     Fill the login Form    username=${mcf_user_email_id}    password=${mcf_valid_password} 
     Customer landing loans applications
     Customer loans overivew schedule
