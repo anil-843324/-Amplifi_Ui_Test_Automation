@@ -38,7 +38,7 @@ jobs:
         with:
           name: Report
           path: report.html
-
+      
       - name: Download Test Report Artifact
         uses: actions/download-artifact@v3
         with:
@@ -65,7 +65,7 @@ jobs:
           yag = yagmail.SMTP(user=sender_email, password=app_password)
 
           # Path to the report file (using the correct path)
-          report_path = report.html
+          report_path = './Report/report.html'
           # Print the current working directory for debugging
           print('Current working directory:', os.getcwd())
 
