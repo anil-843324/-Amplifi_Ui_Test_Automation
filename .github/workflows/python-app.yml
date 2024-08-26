@@ -48,7 +48,7 @@ jobs:
           import yagmail
 
           sender_email = 'anilkumarsingh142200@gmail.com'
-          receiver_email = 'rathortushar001@gmail.com'
+          receiver_email = 'rathoretushar01@gmail.com'
           subject = 'Robot Framework Test Report'
 
           # Retrieve the app-specific password from the environment variable
