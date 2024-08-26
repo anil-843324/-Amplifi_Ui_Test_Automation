@@ -62,8 +62,7 @@ jobs:
           yag = yagmail.SMTP(user=sender_email, password=app_password)
 
           # Path to the report file (using the correct path)
-          report_path = '/home/runner/work/-Amplifi_Ui_Test_Automation/report.html'
-
+          report_path = '/home/runner/work/-Amplifi_Ui_Test_Automation/-Amplifi_Ui_Test_Automation/Report'
           # Print the current working directory for debugging
           print('Current working directory:', os.getcwd())
 
