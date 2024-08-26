@@ -26,13 +26,43 @@ jobs:
           pip install robotframework-seleniumlibrary
           pip install robotframework-datadriver
           pip install -U robotframework-datadriver[XLS]
+          pip install yagmail
    
       - name: Test with RobotFramework
-        run: robot .  
+        run: robot .
          
       - name: Test Report Generation
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
-          name: Report                # Name of the folder
-          path: report.html           # Path to test results
+          name: Report
+          path: report.html
+
+      - name: Send Test Report via Email
+        if: success() || failure()
+        env:
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}  # Use the GitHub Secret here
+        run: |
+          python -c "
+import os
+import yagmail
+
+sender_email = 'anilkumarsingh142200@gmail.com'
+receiver_email = 'rathortushar001@gmail.com'
+subject = 'Robot Framework Test Report'
+body = 'Please find the attached Robot Framework test report.'
+
+# Retrieve the app-specific password from the environment variable
+app_password = os.getenv('GMAIL_APP_PASSWORD')
+
+# Initialize the Yagmail client
+yag = yagmail.SMTP(user=sender_email, password=app_password)
+
+# Send the email
+yag.send(
+    to=receiver_email,
+    subject=subject,
+    contents=body,
+    attachments='report.html'  # Path to the report file
+)
+          "
