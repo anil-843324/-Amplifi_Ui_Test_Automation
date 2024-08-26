@@ -4,21 +4,21 @@ on:
     branches: [ "main" ]
   pull_request:
     branches: [ "main" ]
- 
+
 permissions:
   contents: read
- 
+
 jobs:
   test:
     runs-on: ubuntu-latest
-     
+
     steps:
       - uses: actions/checkout@v3
       - name: Set up Python 3.12.1
         uses: actions/setup-python@v3
         with:
           python-version: 3.12.1
-   
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -27,10 +27,10 @@ jobs:
           pip install robotframework-datadriver
           pip install -U robotframework-datadriver[XLS]
           pip install yagmail
-   
+
       - name: Test with RobotFramework
         run: robot .
-         
+
       - name: Test Report Generation
         uses: actions/upload-artifact@v4
         if: success() || failure()
@@ -41,28 +41,27 @@ jobs:
       - name: Send Test Report via Email
         if: success() || failure()
         env:
-          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}  # Use the GitHub Secret here
+          GMAIL_APP_PASSWORD: ${{ secrets.GMAIL_APP_PASSWORD }}
         run: |
           python -c "
-import os
-import yagmail
+          import os
+          import yagmail
 
-sender_email = 'anilkumarsingh142200@gmail.com'
-receiver_email = 'rathortushar001@gmail.com'
-subject = 'Robot Framework Test Report'
-body = 'Please find the attached Robot Framework test report.'
+          sender_email = 'anilkumarsingh142200@gmail.com'
+          receiver_email = 'rathortushar001@gmail.com'
+          subject = 'Robot Framework Test Report'
 
-# Retrieve the app-specific password from the environment variable
-app_password = os.getenv('GMAIL_APP_PASSWORD')
+          # Retrieve the app-specific password from the environment variable
+          app_password = os.getenv('GMAIL_APP_PASSWORD')
 
-# Initialize the Yagmail client
-yag = yagmail.SMTP(user=sender_email, password=app_password)
+          # Initialize the Yagmail client
+          yag = yagmail.SMTP(user=sender_email, password=app_password)
 
-# Send the email
-yag.send(
-    to=receiver_email,
-    subject=subject,
-    contents=body,
-    attachments='report.html'  # Path to the report file
-)
+          # Send the email
+          yag.send(
+              to=receiver_email,
+              subject=subject,
+              contents='Please find the attached Robot Framework test report.\n\n# Additional information',
+              attachments='report.html'  # Path to the report file
+          )
           "
