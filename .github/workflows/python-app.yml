@@ -61,17 +61,25 @@ jobs:
           # Initialize the Yagmail client
           yag = yagmail.SMTP(user=sender_email, password=app_password)
 
-          # Path to the report file (ensure this path is correct)
-          report_path = './report.html'
+          # Path to the report file (using the correct path)
+          report_path = '/home/runner/work/-Amplifi_Ui_Test_Automation/-Amplifi_Ui_Test_Automation/report.html'
 
           # Print the current working directory for debugging
           print('Current working directory:', os.getcwd())
 
-          # Send the email
-          yag.send(
-              to=receiver_email,
-              subject=subject,
-              contents='Please find the attached Robot Framework test report.\n\n# Additional information',
-              attachments=report_path  # Path to the report file
-          )
+          # Check if the report file exists
+          if os.path.exists(report_path):
+              print(f'Report found: {report_path}')
+              
+              # Send the email
+              print('Sending email...')
+              yag.send(
+                  to=receiver_email,
+                  subject=subject,
+                  contents='Please find the attached Robot Framework test report.\n\n# Additional information',
+                  attachments=report_path  # Path to the report file
+              )
+              print('Email sent successfully')
+          else:
+              print(f'Report not found at path: {report_path}')
           "
