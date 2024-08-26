@@ -33,17 +33,21 @@ jobs:
         run: robot .
 
       - name: Test Report Generation
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v3
         if: success() || failure()
         with:
           name: Report
           path: report.html
-      
       - name: Download Test Report Artifact
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v3
         with:
           name: Report
           path: .
+      - name: Verify Downloaded Artifact
+        run: |
+          echo "Current directory: $(pwd)"
+          echo "Listing files in the current directory:"
+          ls -la
 
       - name: Send Test Report via Email
         if: success() || failure()
@@ -65,7 +69,7 @@ jobs:
           yag = yagmail.SMTP(user=sender_email, password=app_password)
 
           # Path to the report file (using the correct path)
-          report_path = './Report/report.html'
+          report_path = '/home/runner/work/-Amplifi_Ui_Test_Automation/-Amplifi_Ui_Test_Automation/Report'
           # Print the current working directory for debugging
           print('Current working directory:', os.getcwd())
 
