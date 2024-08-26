@@ -39,8 +39,11 @@ jobs:
           name: Report
           path: report.html
 
-      - name: List Files
-        run: ls -la
+      - name: Download Test Report Artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: Report
+          path: .
 
       - name: Send Test Report via Email
         if: success() || failure()
