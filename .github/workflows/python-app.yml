@@ -31,31 +31,41 @@ jobs:
       - name: Test with RobotFramework
         run: robot .
 
-      - name: Debug - List All Files in Working Directory
-        run: ls -Rla
-
-      - name: Debug - Check if Report Folder Exists
-        run: |
-          if [ -d "Report" ]; then
-            echo "Report folder exists and contains:"
-            ls -la Report/
-          else
-            echo "Report folder does not exist."
-            exit 1
-          fi
-
-      - name: Compress Report Folder to .zip
-        run: zip -r report.zip Report/
-
       - name: Test Report Generation
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: Report
-          path: report.zip
+          path: |
+            report.html
+            log.html
+            output.xml
 
       - name: List Files
         run: ls -la
+
+      - name: Compress Reports to Report.zip
+        run: |
+          python -c "
+          import shutil
+          import os
+
+          # Define the paths to the report files
+          report_files = ['./report.html', './log.html', './output.xml']
+
+          # Ensure all files exist before zipping
+          for file_path in report_files:
+              if not os.path.exists(file_path):
+                  print(f'Error: {file_path} does not exist.')
+                  exit(1)
+
+          # Create a .zip archive
+          shutil.make_archive('Report', 'zip', '.', 'report.html')
+          shutil.make_archive('Report', 'zip', '.', 'log.html')
+          shutil.make_archive('Report', 'zip', '.', 'output.xml')
+
+          print('Report.zip created successfully.')
+          "
 
       - name: Send Test Report via Email
         if: success() || failure()
@@ -80,34 +90,30 @@ jobs:
           msg['To'] = receiver_email
           msg['Subject'] = subject
 
-          body = 'Please find the attached Robot Framework test reports in the .zip file.\n\n# Additional information'
+          body = 'Please find the attached Robot Framework test report in the zip file.\n\n# Additional information'
           msg.attach(MIMEText(body, 'plain'))
 
-          print('Current working directory:', os.getcwd())
+          # Path to the zip file
+          zip_path = './Report.zip'
 
-          report_zip_path = './report.zip'
-
-          if os.path.exists(report_zip_path):
-              print(f'Report .zip found: {report_zip_path}')
+          # Attach the zip file
+          with open(zip_path, 'rb') as attachment_file:
               attachment = MIMEBase('application', 'zip')
-              with open(report_zip_path, 'rb') as attachment_file:
-                  attachment.set_payload(attachment_file.read())
-              encoders.encode_base64(attachment)
-              attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(report_zip_path)}')
-              msg.attach(attachment)
+              attachment.set_payload(attachment_file.read())
+          encoders.encode_base64(attachment)
+          attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(zip_path)}')
+          msg.attach(attachment)
 
-              try:
-                  server = smtplib.SMTP('smtp.gmail.com', 587)
-                  server.starttls()
-                  server.login(sender_email, app_password)
+          try:
+              server = smtplib.SMTP('smtp.gmail.com', 587)
+              server.starttls()
+              server.login(sender_email, app_password)
 
-                  print('Sending email...')
-                  server.send_message(msg)
-                  print('Email sent successfully')
+              print('Sending email...')
+              server.send_message(msg)
+              print('Email sent successfully')
 
-                  server.quit()
-              except Exception as e:
-                  print(f'Failed to send email: {str(e)}')
-          else:
-              print(f'Report .zip not found at path: {report_zip_path}')
+              server.quit()
+          except Exception as e:
+              print(f'Failed to send email: {str(e)}')
           "
