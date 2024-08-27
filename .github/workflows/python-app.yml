@@ -31,9 +31,21 @@ jobs:
       - name: Test with RobotFramework
         run: robot .
 
-      - name: Compress Report Folder to .zip
+      - name: Debug - List All Files in Working Directory
+        run: ls -Rla
+
+      - name: Debug - Check if Report Folder Exists
         run: |
-          zip -r report.zip Report/
+          if [ -d "Report" ]; then
+            echo "Report folder exists and contains:"
+            ls -la Report/
+          else
+            echo "Report folder does not exist."
+            exit 1
+          fi
+
+      - name: Compress Report Folder to .zip
+        run: zip -r report.zip Report/
 
       - name: Test Report Generation
         uses: actions/upload-artifact@v4
