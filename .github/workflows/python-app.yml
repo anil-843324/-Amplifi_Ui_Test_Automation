@@ -44,29 +44,6 @@ jobs:
       - name: List Files
         run: ls -la
 
-      - name: Compress Reports to Report.zip
-        run: |
-          python -c "
-          import shutil
-          import os
-
-          # Define the paths to the report files
-          report_files = ['./report.html', './log.html', './output.xml']
-
-          # Ensure all files exist before zipping
-          for file_path in report_files:
-              if not os.path.exists(file_path):
-                  print(f'Error: {file_path} does not exist.')
-                  exit(1)
-
-          # Create a .zip archive
-          shutil.make_archive('Report', 'zip', '.', 'report.html')
-          shutil.make_archive('Report', 'zip', '.', 'log.html')
-          shutil.make_archive('Report', 'zip', '.', 'output.xml')
-
-          print('Report.zip created successfully.')
-          "
-
       - name: Send Test Report via Email
         if: success() || failure()
         env:
@@ -85,24 +62,31 @@ jobs:
           subject = 'Robot Framework Test Report'
           app_password = os.getenv('GMAIL_APP_PASSWORD')
 
+          # Define the paths to the report files
+          report_files = ['./report.html', './log.html', './output.xml']
+
           msg = MIMEMultipart()
           msg['From'] = sender_email
           msg['To'] = receiver_email
           msg['Subject'] = subject
 
-          body = 'Please find the attached Robot Framework test report in the zip file.\n\n# Additional information'
+          body = 'Please find the attached Robot Framework test reports.\n\n# Additional information'
           msg.attach(MIMEText(body, 'plain'))
 
-          # Path to the zip file
-          zip_path = './Report.zip'
+          print('Current working directory:', os.getcwd())
 
-          # Attach the zip file
-          with open(zip_path, 'rb') as attachment_file:
-              attachment = MIMEBase('application', 'zip')
-              attachment.set_payload(attachment_file.read())
-          encoders.encode_base64(attachment)
-          attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(zip_path)}')
-          msg.attach(attachment)
+          # Attach each report file
+          for file_path in report_files:
+              if os.path.exists(file_path):
+                  print(f'Report found: {file_path}')
+                  attachment = MIMEBase('application', 'octet-stream')
+                  with open(file_path, 'rb') as attachment_file:
+                      attachment.set_payload(attachment_file.read())
+                  encoders.encode_base64(attachment)
+                  attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(file_path)}')
+                  msg.attach(attachment)
+              else:
+                  print(f'Report not found at path: {file_path}')
 
           try:
               server = smtplib.SMTP('smtp.gmail.com', 587)
