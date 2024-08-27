@@ -31,15 +31,16 @@ jobs:
       - name: Test with RobotFramework
         run: robot .
 
+      - name: Compress Report Folder to .zip
+        run: |
+          zip -r report.zip Report/
+
       - name: Test Report Generation
         uses: actions/upload-artifact@v4
         if: success() || failure()
         with:
           name: Report
-          path: |
-            report.html
-            log.html
-            output.xml
+          path: report.zip
 
       - name: List Files
         run: ls -la
@@ -62,42 +63,39 @@ jobs:
           subject = 'Robot Framework Test Report'
           app_password = os.getenv('GMAIL_APP_PASSWORD')
 
-          # Define the paths to the report files
-          report_files = ['./report.html', './log.html', './output.xml']
-
           msg = MIMEMultipart()
           msg['From'] = sender_email
           msg['To'] = receiver_email
           msg['Subject'] = subject
 
-          body = 'Please find the attached Robot Framework test reports.\n\n# Additional information'
+          body = 'Please find the attached Robot Framework test reports in the .zip file.\n\n# Additional information'
           msg.attach(MIMEText(body, 'plain'))
 
           print('Current working directory:', os.getcwd())
 
-          # Attach each report file
-          for file_path in report_files:
-              if os.path.exists(file_path):
-                  print(f'Report found: {file_path}')
-                  attachment = MIMEBase('application', 'octet-stream')
-                  with open(file_path, 'rb') as attachment_file:
-                      attachment.set_payload(attachment_file.read())
-                  encoders.encode_base64(attachment)
-                  attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(file_path)}')
-                  msg.attach(attachment)
-              else:
-                  print(f'Report not found at path: {file_path}')
+          report_zip_path = './report.zip'
 
-          try:
-              server = smtplib.SMTP('smtp.gmail.com', 587)
-              server.starttls()
-              server.login(sender_email, app_password)
+          if os.path.exists(report_zip_path):
+              print(f'Report .zip found: {report_zip_path}')
+              attachment = MIMEBase('application', 'zip')
+              with open(report_zip_path, 'rb') as attachment_file:
+                  attachment.set_payload(attachment_file.read())
+              encoders.encode_base64(attachment)
+              attachment.add_header('Content-Disposition', f'attachment; filename={os.path.basename(report_zip_path)}')
+              msg.attach(attachment)
 
-              print('Sending email...')
-              server.send_message(msg)
-              print('Email sent successfully')
+              try:
+                  server = smtplib.SMTP('smtp.gmail.com', 587)
+                  server.starttls()
+                  server.login(sender_email, app_password)
 
-              server.quit()
-          except Exception as e:
-              print(f'Failed to send email: {str(e)}')
+                  print('Sending email...')
+                  server.send_message(msg)
+                  print('Email sent successfully')
+
+                  server.quit()
+              except Exception as e:
+                  print(f'Failed to send email: {str(e)}')
+          else:
+              print(f'Report .zip not found at path: {report_zip_path}')
           "
